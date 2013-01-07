@@ -28,6 +28,15 @@ class GitHubPullRequest
         return [401, {}, ['not-ok']]
       end
     end
+    
+    if request.path =~ /^\/push/
+      status = system({'GIT_DIR' => "#{ENV['WIKI_REPO']}/.git"}, 'git push')
+      if status
+        return [200, {}, ['ok']]
+      else
+        return [401, {}, ['not-ok']]
+      end
+    end
     @app.call(env)
   end
 end
