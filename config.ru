@@ -12,6 +12,28 @@ use OmniAuth::Builder do
   provider :github, ENV['GITHUB_KEY'], ENV['GITHUB_SECRET'], scope: 'user'
 end
 
+class GitHubPullRequest
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    request = Rack::Request.new(env)
+
+    if request.path =~ /^\/pull/
+      status = system({'GIT_DIR' => "#{ENV['WIKI_REPO']}/.git"}, 'git pull')
+      if status
+        return [200, {}, ['ok']]
+      else
+        return [401, {}, ['not-ok']]
+      end
+    end
+    @app.call(env)
+  end
+end
+
+use GitHubPullRequest
+
 class OmniAuthSetGollumAuthor
 
   def initialize(app)
