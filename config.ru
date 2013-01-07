@@ -54,7 +54,7 @@ class OmniAuthSetGollumAuthor
     session = env['rack.session']
 
     # Check whether we are authorized, if not redirect.
-    if request.path =~ /^\/(edit|create|revert)\// \
+    if request.path =~ /^\/(edit|create|revert|delete)\// \
         and not session['gollum.author']
       session[:return_to] = request.fullpath
       # Redirect to authentication
